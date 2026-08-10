@@ -1,30 +1,49 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:adm_universidad_ui/nucleo/formato.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:adm_universidad_ui/main.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(() async {
+    await initializeDateFormatting('es');
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  group('Formato.iniciales', () {
+    test('toma la primera letra del nombre y del apellido', () {
+      expect(Formato.iniciales('Ana Martínez'), 'AM');
+      expect(Formato.iniciales('Julio César Encarnación'), 'JE');
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('funciona con un solo nombre y con texto vacío', () {
+      expect(Formato.iniciales('Ana'), 'A');
+      expect(Formato.iniciales('   '), '?');
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Formato.porcentaje', () {
+    test('omite los decimales cuando el valor es entero', () {
+      expect(Formato.porcentaje(92), '92%');
+      expect(Formato.porcentaje(92.5), '92.5%');
+    });
+
+    test('muestra un guion cuando no hay dato', () {
+      expect(Formato.porcentaje(null), '—');
+    });
+  });
+
+  group('Formato.tiempoRestante', () {
+    test('distingue entre una fecha futura y una vencida', () {
+      final futura = DateTime.now().add(const Duration(days: 3));
+      final pasada = DateTime.now().subtract(const Duration(days: 2));
+
+      expect(Formato.tiempoRestante(futura), contains('Vence en'));
+      expect(Formato.tiempoRestante(pasada), contains('Venció'));
+    });
+  });
+
+  group('Formato.nota', () {
+    test('siempre usa dos decimales', () {
+      expect(Formato.nota(92.5), '92.50');
+      expect(Formato.nota(null), '—');
+    });
   });
 }
