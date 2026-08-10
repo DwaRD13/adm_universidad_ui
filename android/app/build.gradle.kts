@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.example.adm_universidad_ui"
-    compileSdk = flutter.compileSdkVersion
+    // file_picker arrastra flutter_plugin_android_lifecycle, que exige compileSdk 36+;
+    // el valor por defecto de este Flutter SDK (flutter.compileSdkVersion) es menor.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
