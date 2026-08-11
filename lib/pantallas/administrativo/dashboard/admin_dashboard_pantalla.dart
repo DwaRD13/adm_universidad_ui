@@ -1,3 +1,5 @@
+import 'package:adm_universidad_ui/modelos/usuario_admin.dart';
+import 'package:adm_universidad_ui/nucleo/formato.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +12,6 @@ import '../../../proveedores/sesion_proveedor.dart';
 import '../../../widgets/comunes.dart';
 import '../../../widgets/estado_vista.dart';
 
-/// Pantalla principal del administrativo: indicadores globales,
-/// actividad reciente y accesos a los módulos de gestión.
 class AdminDashboardPantalla extends StatefulWidget {
   const AdminDashboardPantalla({super.key});
 
@@ -31,8 +31,15 @@ class _AdminDashboardPantallaState extends State<AdminDashboardPantalla> {
   @override
   Widget build(BuildContext context) {
     final proveedor = context.watch<AdminDashboardProveedor>();
-    final usuario = context.watch<SesionProveedor>().usuario;
+
     final resumen = proveedor.resumen;
+
+    final usuario = context.watch<SesionProveedor>().usuario;
+
+    String nombreAdmin = usuario?.nombres != null
+        ? '${usuario?.nombres} ${usuario?.apellidos}'
+        : 'Administrador ';
+    String? empleadoIdAdmin;
 
     return Scaffold(
       body: SafeArea(
@@ -52,8 +59,8 @@ class _AdminDashboardPantallaState extends State<AdminDashboardPantalla> {
                 children: [
                   TarjetaHero(
                     child: _SaludoAdmin(
-                      nombre: usuario?.nombres ?? '',
-                      empleadoId: usuario?.matricula_empleado_id,
+                      nombre: nombreAdmin,
+                      empleadoId: empleadoIdAdmin,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -81,7 +88,7 @@ class _AdminDashboardPantallaState extends State<AdminDashboardPantalla> {
 }
 
 // ---------------------------------------------------------------------------
-// Saludo administrativo sobre la tarjeta hero
+// Saludo administrativo
 // ---------------------------------------------------------------------------
 class _SaludoAdmin extends StatelessWidget {
   const _SaludoAdmin({required this.nombre, this.empleadoId});
@@ -159,7 +166,43 @@ class _SaludoAdmin extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Fila de indicadores globales
+// Insignia (igual que en el dashboard de estudiante)
+// ---------------------------------------------------------------------------
+class _Insignia extends StatelessWidget {
+  const _Insignia({required this.texto, required this.color, this.icono});
+
+  final String texto;
+  final Color color;
+  final IconData? icono;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icono != null) ...[
+            Icon(icono, size: 14, color: color),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            texto,
+            style: context.textos.labelMedium?.copyWith(color: color),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Indicadores globales
 // ---------------------------------------------------------------------------
 class _IndicadoresGlobales extends StatelessWidget {
   const _IndicadoresGlobales({required this.resumen});
@@ -207,7 +250,67 @@ class _IndicadoresGlobales extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Actividad reciente (últimas inscripciones / mensajes)
+// Widget _Indicador (idéntico al del dashboard de estudiante)
+// ---------------------------------------------------------------------------
+class _Indicador extends StatelessWidget {
+  const _Indicador({
+    required this.icono,
+    required this.valor,
+    required this.etiqueta,
+    required this.detalle,
+    required this.color,
+  });
+
+  final IconData icono;
+  final String valor;
+  final String etiqueta;
+  final String detalle;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.13),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(icono, size: 18, color: color),
+            ),
+            const SizedBox(height: 12),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(valor, style: context.textos.headlineSmall),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              etiqueta,
+              style: context.textos.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              detalle,
+              style: context.textos.labelSmall?.copyWith(
+                color: context.colores.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Actividad reciente
 // ---------------------------------------------------------------------------
 class _ActividadReciente extends StatelessWidget {
   const _ActividadReciente({required this.resumen});
@@ -216,7 +319,6 @@ class _ActividadReciente extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Si no hay actividad reciente se muestra un mensaje amigable
     if (resumen.ultimasActividades.isEmpty) {
       return Card(
         child: Padding(
@@ -254,7 +356,7 @@ class _ActividadReciente extends StatelessWidget {
         }),
         Center(
           child: TextButton(
-            onPressed: () {}, // Podría ir a un historial
+            onPressed: () {},
             child: const Text('Ver todo el historial'),
           ),
         ),
@@ -275,20 +377,13 @@ class _FilaActividad extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(
-              actividad.icono,
-              size: 22,
-              color: context.colores.primary,
-            ),
+            Icon(actividad.icono, size: 22, color: context.colores.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    actividad.titulo,
-                    style: context.textos.titleSmall,
-                  ),
+                  Text(actividad.titulo, style: context.textos.titleSmall),
                   const SizedBox(height: 2),
                   Text(
                     actividad.descripcion,
@@ -314,7 +409,7 @@ class _FilaActividad extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Cuadrícula de módulos administrativos
+// Cuadrícula de módulos
 // ---------------------------------------------------------------------------
 class _CuadriculaModulosAdmin extends StatelessWidget {
   @override
@@ -334,25 +429,25 @@ class _CuadriculaModulosAdmin extends StatelessWidget {
           icono: Icons.manage_accounts_rounded,
           titulo: 'Usuarios',
           color: estados.info,
-          alPulsar: () => context.push(Rutas.usuarios),
+          alPulsar: () => context.push(Rutas.adminUsuarios),
         ),
         TarjetaModulo(
           icono: Icons.meeting_room_rounded,
           titulo: 'Secciones',
           color: estados.exito,
-          alPulsar: () => context.push(Rutas.seccionesAdmin),
+          alPulsar: () => context.push(Rutas.adminSecciones),
         ),
         TarjetaModulo(
           icono: Icons.auto_stories_rounded,
           titulo: 'Carreras',
           color: colores.tertiary,
-          alPulsar: () => context.push(Rutas.carrerasAdmin),
+          alPulsar: () => context.push(Rutas.adminCarreras),
         ),
         TarjetaModulo(
-          icono: Icons.settings_rounded,
-          titulo: 'Configuración',
+          icono: Icons.bar_chart_rounded,
+          titulo: 'Reportes',
           color: colores.secondary,
-          alPulsar: () => context.push(Rutas.configuracion),
+          alPulsar: () => context.push(Rutas.adminReportes),
         ),
       ],
     );

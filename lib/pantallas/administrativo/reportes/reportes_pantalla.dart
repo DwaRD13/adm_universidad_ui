@@ -1,3 +1,4 @@
+import 'package:adm_universidad_ui/modelos/admin_resumen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +76,7 @@ class _ReportesPantallaState extends State<ReportesPantalla> {
 class _ResumenRapido extends StatelessWidget {
   const _ResumenRapido({required this.resumen});
 
-  final ReportesResumen resumen;
+  final AdminResumen resumen;
 
   @override
   Widget build(BuildContext context) {

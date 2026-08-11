@@ -6,7 +6,6 @@ import '../../../app/router.dart';
 import '../../../app/tema.dart';
 import '../../../modelos/materia.dart';
 import '../../../proveedores/materias_proveedor.dart';
-import '../../../widgets/comunes.dart';
 import '../../../widgets/estado_vista.dart';
 
 /// Listado de materias con filtro por carrera.
@@ -174,7 +173,7 @@ class _TarjetaMateria extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push(
-          Rutas.detalleMateria.replaceAll(':id', materia.id.toString()),
+          Rutas.detalleMateria(materia.id!),
         ),
         child: Padding(
           padding: const EdgeInsets.all(14),

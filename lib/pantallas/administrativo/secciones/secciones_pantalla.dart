@@ -209,7 +209,7 @@ class _TarjetaSeccion extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push(
-          Rutas.detalleSeccion.replaceAll(':id', seccion.id.toString()),
+          Rutas.detalleSeccion(seccion.id!),
         ),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -231,7 +231,7 @@ class _TarjetaSeccion extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      seccion.materiaNombre,
+                      seccion.materiaNombre ?? '',
                       style: context.textos.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -272,10 +272,10 @@ class _TarjetaSeccion extends StatelessWidget {
                       tono: colorEstado == context.estados.info
                           ? TonoEstado.info
                           : colorEstado == context.estados.exito
-                              ? TonoEstado.exito
-                              : colorEstado == context.estados.advertencia
-                                  ? TonoEstado.advertencia
-                                  : TonoEstado.error,
+                          ? TonoEstado.exito
+                          : colorEstado == context.estados.advertencia
+                          ? TonoEstado.advertencia
+                          : TonoEstado.error,
                       icono: Icons.circle_rounded,
                     ),
                   ],
@@ -323,11 +323,17 @@ class _ListaVacia extends StatelessWidget {
     return ListView(
       children: [
         const SizedBox(height: 80),
-        Icon(Icons.meeting_room_rounded,
-            size: 64, color: context.colores.outline),
+        Icon(
+          Icons.meeting_room_rounded,
+          size: 64,
+          color: context.colores.outline,
+        ),
         const SizedBox(height: 16),
-        Text(mensaje,
-            textAlign: TextAlign.center, style: context.textos.titleMedium),
+        Text(
+          mensaje,
+          textAlign: TextAlign.center,
+          style: context.textos.titleMedium,
+        ),
       ],
     );
   }

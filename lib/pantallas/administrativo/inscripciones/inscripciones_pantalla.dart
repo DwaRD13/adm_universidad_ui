@@ -1,3 +1,4 @@
+import 'package:adm_universidad_ui/widgets/chip_filtro.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +76,7 @@ class _InscripcionesPantallaState extends State<InscripcionesPantalla> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
-                _ChipFiltro(
+                ChipFiltro(
                   etiqueta: 'Todos los estados',
                   seleccionado: proveedor.estadoSeleccionado == null,
                   alPulsar: () => proveedor.filtrarPorEstado(null),
@@ -85,7 +86,7 @@ class _InscripcionesPantallaState extends State<InscripcionesPantalla> {
                   final sel = proveedor.estadoSeleccionado == e;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: _ChipFiltro(
+                    child: ChipFiltro(
                       etiqueta: e,
                       seleccionado: sel,
                       alPulsar: () => proveedor.filtrarPorEstado(e),
@@ -93,7 +94,7 @@ class _InscripcionesPantallaState extends State<InscripcionesPantalla> {
                   );
                 }),
                 const SizedBox(width: 16),
-                _ChipFiltro(
+                ChipFiltro(
                   etiqueta: 'Todos los periodos',
                   seleccionado: proveedor.periodoSeleccionado == null,
                   alPulsar: () => proveedor.filtrarPorPeriodo(null),
@@ -103,7 +104,7 @@ class _InscripcionesPantallaState extends State<InscripcionesPantalla> {
                   final sel = proveedor.periodoSeleccionado == p;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: _ChipFiltro(
+                    child: ChipFiltro(
                       etiqueta: p,
                       seleccionado: sel,
                       alPulsar: () => proveedor.filtrarPorPeriodo(p),
@@ -120,8 +121,9 @@ class _InscripcionesPantallaState extends State<InscripcionesPantalla> {
               error: proveedor.inscripciones.isEmpty ? proveedor.error : null,
               vacio: !proveedor.cargando && proveedor.inscripciones.isEmpty,
               alReintentar: proveedor.cargar,
-              vistaVacia:
-                  const _ListaVacia(mensaje: 'No hay inscripciones registradas'),
+              vistaVacia: const _ListaVacia(
+                mensaje: 'No hay inscripciones registradas',
+              ),
               skeleton: const CargandoSkeleton(lineas: 5, altura: 80),
               contenido: (context) => RefreshIndicator(
                 onRefresh: () => proveedor.cargar(silencioso: true),
@@ -174,9 +176,7 @@ class _TarjetaInscripcion extends StatelessWidget {
 
     return Card(
       child: InkWell(
-        onTap: () => context.push(
-          Rutas.detalleInscripcion.replaceAll(':id', inscripcion.id.toString()),
-        ),
+        onTap: () => context.push(Rutas.detalleInscripcion(inscripcion.id!)),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -186,7 +186,7 @@ class _TarjetaInscripcion extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      inscripcion.estudianteNombre,
+                      inscripcion.estudianteNombre ?? '',
                       style: context.textos.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -197,10 +197,10 @@ class _TarjetaInscripcion extends StatelessWidget {
                     tono: colorEstado == context.estados.info
                         ? TonoEstado.info
                         : colorEstado == context.estados.exito
-                            ? TonoEstado.exito
-                            : colorEstado == context.estados.advertencia
-                                ? TonoEstado.advertencia
-                                : TonoEstado.error,
+                        ? TonoEstado.exito
+                        : colorEstado == context.estados.advertencia
+                        ? TonoEstado.advertencia
+                        : TonoEstado.error,
                     icono: Icons.circle_rounded,
                   ),
                 ],
@@ -246,11 +246,17 @@ class _ListaVacia extends StatelessWidget {
     return ListView(
       children: [
         const SizedBox(height: 80),
-        Icon(Icons.playlist_add_check_rounded,
-            size: 64, color: context.colores.outline),
+        Icon(
+          Icons.playlist_add_check_rounded,
+          size: 64,
+          color: context.colores.outline,
+        ),
         const SizedBox(height: 16),
-        Text(mensaje,
-            textAlign: TextAlign.center, style: context.textos.titleMedium),
+        Text(
+          mensaje,
+          textAlign: TextAlign.center,
+          style: context.textos.titleMedium,
+        ),
       ],
     );
   }

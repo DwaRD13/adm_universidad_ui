@@ -4,6 +4,7 @@ import 'package:adm_universidad_ui/proveedores/inscripciones_proveedor.dart';
 import 'package:adm_universidad_ui/proveedores/materias_proveedor.dart';
 import 'package:adm_universidad_ui/proveedores/reportes_proveedor.dart';
 import 'package:adm_universidad_ui/proveedores/secciones_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/usuarios_proveedor.dart';
 import 'package:adm_universidad_ui/servicios/admin_servicio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -104,6 +105,7 @@ class _UniConnectAppState extends State<UniConnectApp> {
           create: (_) => InscripcionesProveedor(admin: _admin),
         ),
         ChangeNotifierProvider(create: (_) => ReportesProveedor(admin: _admin)),
+        ChangeNotifierProvider(create: (_) => UsuariosProveedor(admin: _admin)),
       ],
       child: Consumer<TemaProveedor>(
         builder: (context, tema, _) => MaterialApp.router(

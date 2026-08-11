@@ -1,12 +1,13 @@
+import 'package:adm_universidad_ui/modelos/usuario_admin.dart';
+import 'package:adm_universidad_ui/nucleo/formato.dart';
+import 'package:adm_universidad_ui/proveedores/usuarios_proveedor.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router.dart';
 import '../../../app/tema.dart';
-import '../../../modelos/usuario.dart';
 import '../../../proveedores/sesion_proveedor.dart';
-import '../../../proveedores/usuarios_proveedor.dart';
 import '../../../widgets/comunes.dart';
 import '../../../widgets/estado_vista.dart';
 
@@ -194,7 +195,7 @@ class _ChipFiltro extends StatelessWidget {
 class _TarjetaUsuario extends StatelessWidget {
   const _TarjetaUsuario({required this.usuario});
 
-  final Usuario usuario;
+  final UsuarioAdmin usuario;
 
   Color _colorEstado(BuildContext context) {
     switch (usuario.estado) {
@@ -217,9 +218,7 @@ class _TarjetaUsuario extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(
-          Rutas.detalleUsuario.replaceAll(':id', usuario.id.toString()),
-        ),
+        onTap: () => context.push(Rutas.detalleUsuario(usuario.id)),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -229,8 +228,7 @@ class _TarjetaUsuario extends StatelessWidget {
                 radius: 20,
                 backgroundColor: colores.primaryContainer,
                 child: Text(
-                  Formato.iniciales(
-                      '${usuario.nombres} ${usuario.apellidos}'),
+                  Formato.iniciales('${usuario.nombres} ${usuario.apellidos}'),
                   style: context.textos.labelLarge?.copyWith(
                     color: colores.onPrimaryContainer,
                     fontWeight: FontWeight.w600,
@@ -266,12 +264,12 @@ class _TarjetaUsuario extends StatelessWidget {
                       children: [
                         _InsigniaRol(usuario: usuario),
                         ChipEstado(
-                          texto: usuario.estado,
+                          texto: usuario.estado ?? 'Desconocido',
                           tono: estadoColor == context.estados.exito
                               ? TonoEstado.exito
                               : estadoColor == context.estados.advertencia
-                                  ? TonoEstado.advertencia
-                                  : TonoEstado.error,
+                              ? TonoEstado.advertencia
+                              : TonoEstado.error,
                           icono: Icons.circle_rounded,
                         ),
                       ],
@@ -281,12 +279,12 @@ class _TarjetaUsuario extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               // Indicador de matrícula / ID si existe
-              if (usuario.matricula_empleado_id != null &&
-                  usuario.matricula_empleado_id!.isNotEmpty)
+              if (usuario.matriculaEmpleadoId != null &&
+                  usuario.matriculaEmpleadoId!.isNotEmpty)
                 Chip(
                   avatar: const Icon(Icons.tag_rounded, size: 16),
                   label: Text(
-                    usuario.matricula_empleado_id!,
+                    usuario.matriculaEmpleadoId!,
                     style: context.textos.labelSmall,
                   ),
                   visualDensity: VisualDensity.compact,
@@ -306,7 +304,7 @@ class _TarjetaUsuario extends StatelessWidget {
 class _InsigniaRol extends StatelessWidget {
   const _InsigniaRol({required this.usuario});
 
-  final Usuario usuario;
+  final UsuarioAdmin usuario;
 
   @override
   Widget build(BuildContext context) {

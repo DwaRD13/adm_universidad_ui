@@ -6,7 +6,6 @@ import '../../../app/router.dart';
 import '../../../app/tema.dart';
 import '../../../modelos/carrera.dart';
 import '../../../proveedores/carreras_proveedor.dart';
-import '../../../widgets/comunes.dart';
 import '../../../widgets/estado_vista.dart';
 
 /// Listado de carreras con búsqueda y gestión.
@@ -79,7 +78,9 @@ class _CarrerasPantallaState extends State<CarrerasPantalla> {
               error: proveedor.carreras.isEmpty ? proveedor.error : null,
               vacio: !proveedor.cargando && proveedor.carreras.isEmpty,
               alReintentar: proveedor.cargar,
-              vistaVacia: const _ListaVacia(mensaje: 'No hay carreras registradas'),
+              vistaVacia: const _ListaVacia(
+                mensaje: 'No hay carreras registradas',
+              ),
               skeleton: const CargandoSkeleton(lineas: 5, altura: 80),
               contenido: (context) => RefreshIndicator(
                 onRefresh: () => proveedor.cargar(silencioso: true),
@@ -115,14 +116,11 @@ class _TarjetaCarrera extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(
-          Rutas.detalleCarrera(carrera.id),
-        ),
+        onTap: () => context.push(Rutas.detalleCarrera(carrera.id!)),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
-              // Icono representativo
               Container(
                 width: 42,
                 height: 42,
@@ -193,8 +191,11 @@ class _ListaVacia extends StatelessWidget {
         const SizedBox(height: 80),
         Icon(Icons.school_rounded, size: 64, color: context.colores.outline),
         const SizedBox(height: 16),
-        Text(mensaje,
-            textAlign: TextAlign.center, style: context.textos.titleMedium),
+        Text(
+          mensaje,
+          textAlign: TextAlign.center,
+          style: context.textos.titleMedium,
+        ),
       ],
     );
   }
