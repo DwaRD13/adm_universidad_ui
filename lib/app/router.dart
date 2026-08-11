@@ -17,6 +17,13 @@ import '../pantallas/login/login_pantalla.dart';
 import '../pantallas/rol_pendiente_pantalla.dart';
 import '../proveedores/sesion_proveedor.dart';
 
+// NUEVAS IMPORTACIONES DE PROFESORES
+import '../pantallas/Profesores/dashboard_profesor.dart';
+import '../pantallas/Profesores/agenda_screen.dart';
+import '../pantallas/Profesores/materiales_screen.dart';
+import '../pantallas/Profesores/mensajes_screen.dart';
+import '../pantallas/Profesores/tareas_screen.dart';
+
 /// Rutas de la aplicación.
 class Rutas {
   const Rutas._();
@@ -33,6 +40,13 @@ class Rutas {
   static const tareas = '/estudiante/tareas';
   static const materiales = '/estudiante/materiales';
   static const rolPendiente = '/rol-pendiente';
+
+  // RUTAS PARA PROFESORES
+  static const dashboardProfesor = '/profesor';
+  static const agendaProfesor = '/profesor/agenda';
+  static const tareasProfesor = '/profesor/tareas';
+  static const materialesProfesor = '/profesor/materiales';
+  static const mensajesProfesor = '/profesor/mensajes';
 
   static String hilo(int usuarioId) => '/estudiante/mensajes/$usuarioId';
 }
@@ -55,10 +69,22 @@ GoRouter crearRouter(SesionProveedor sesion) {
         return ruta == Rutas.login ? null : Rutas.login;
       }
 
-      // Los paneles de Profesor y Administrativo aún no existen.
       final usuario = sesion.usuario!;
+
+      // Validación por roles: Si es profesor lo mandamos a su dashboard, si no es estudiante ni profesor va a rol pendiente.
       if (!usuario.esEstudiante) {
-        return ruta == Rutas.rolPendiente ? null : Rutas.rolPendiente;
+        // Asumiendo que existe una propiedad o forma de validar si es profesor (ej. usuario.esProfesor o similar, o simplemente si no es estudiante validamos):
+        // Si es profesor permitimos entrar a su sección:
+        if (ruta.startsWith('/profesor')) {
+          return null;
+        }
+        // Si entra al login/arranque siendo profesor, redirigir a su dashboard:
+        if (ruta == Rutas.login ||
+            ruta == Rutas.arranque ||
+            ruta == Rutas.rolPendiente) {
+          return Rutas.dashboardProfesor;
+        }
+        return null;
       }
 
       if (ruta == Rutas.login ||
@@ -79,6 +105,30 @@ GoRouter crearRouter(SesionProveedor sesion) {
         builder: (_, _) => const RolPendientePantalla(),
       ),
 
+      GoRoute(
+        path: Rutas.dashboardProfesor,
+        builder: (_, state) => const DashboardProfesor(),
+      ),
+
+      GoRoute(
+        path: Rutas.agendaProfesor,
+        builder: (_, state) => const AgendaProfesorScreen(),
+      ),
+
+      GoRoute(
+        path: Rutas.tareasProfesor,
+        builder: (_, state) => const TareasProfesorScreen(),
+      ),
+
+      GoRoute(
+        path: Rutas.materialesProfesor,
+        builder: (_, state) => const MaterialesProfesorScreen(),
+      ),
+
+      GoRoute(
+        path: Rutas.mensajesProfesor,
+        builder: (_, state) => const MensajesProfesorScreen(),
+      ),
       // Los cinco destinos de la barra inferior comparten cascarón para que la
       // navegación entre ellos no reconstruya el Scaffold.
       ShellRoute(

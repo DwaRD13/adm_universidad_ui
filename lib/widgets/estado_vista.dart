@@ -8,13 +8,15 @@ import 'comunes.dart';
 ///
 /// Da sensación de que el contenido "ya viene" y evita el salto visual del
 /// indicador circular centrado.
+/// Esqueleto de carga: rectángulos con brillo en lugar de un spinner suelto.
 class CargandoSkeleton extends StatelessWidget {
-  const CargandoSkeleton({super.key, this.lineas = 4, this.altura = 92});
+  const CargandoSkeleton({
+    super.key,
+    this.lineas = 4,
+    this.altura = 92,
+  });
 
-  /// Número de bloques que se dibujan.
   final int lineas;
-
-  /// Alto de cada bloque; se ajusta al tipo de tarjeta que va a sustituir.
   final double altura;
 
   @override
@@ -24,18 +26,31 @@ class CargandoSkeleton extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: colores.surfaceContainerHighest,
       highlightColor: colores.surfaceContainerLow,
+
       child: ContenidoCentrado(
-        child: ListView.separated(
+        child: Padding(
           padding: const EdgeInsets.all(16),
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: lineas,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (_, _) => Container(
-            height: altura,
-            decoration: BoxDecoration(
-              color: colores.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(TemaApp.radio),
-            ),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+
+            children: [
+              for (int i = 0; i < lineas; i++) ...[
+                Container(
+                  height: altura,
+                  decoration: BoxDecoration(
+                    color: colores.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(
+                      TemaApp.radio,
+                    ),
+                  ),
+                ),
+
+                if (i < lineas - 1)
+                  const SizedBox(height: 12),
+              ],
+            ],
           ),
         ),
       ),

@@ -21,6 +21,8 @@ import 'servicios/archivo_servicio.dart';
 import 'servicios/auth_servicio.dart';
 import 'servicios/estudiante_servicio.dart';
 
+
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Necesario para que intl formatee fechas y días de la semana en español.

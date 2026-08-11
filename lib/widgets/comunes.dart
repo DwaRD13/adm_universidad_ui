@@ -7,6 +7,10 @@ import '../nucleo/formato.dart';
 ///
 /// En móvil no se nota; en tablet y web evita que una lista se estire a todo el
 /// monitor, que es lo que la vuelve ilegible.
+/// Limita el ancho del contenido y lo centra.
+///
+/// Se puede utilizar dentro de SingleChildScrollView sin provocar
+/// restricciones de altura infinita.
 class ContenidoCentrado extends StatelessWidget {
   const ContenidoCentrado({
     super.key,
@@ -21,14 +25,22 @@ class ContenidoCentrado extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.topCenter,
+
+      // IMPORTANTE:
+      // Hace que Align tome únicamente la altura real de su hijo.
+      // Esto evita que intente ocupar una altura infinita cuando
+      // está dentro de un SingleChildScrollView.
+      heightFactor: 1,
+
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: ancho),
+        constraints: BoxConstraints(
+          maxWidth: ancho,
+        ),
         child: child,
       ),
     );
   }
 }
-
 /// Tarjeta destacada: el segundo nivel de superficie sobre la [Card] normal.
 ///
 /// Se reserva para el bloque principal de una pantalla (el saludo, el resumen).
