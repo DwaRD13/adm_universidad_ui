@@ -116,7 +116,7 @@ class _TarjetaCarrera extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push(
-          Rutas.detalleCarrera.replaceAll(':id', carrera.id.toString()),
+          Rutas.detalleCarrera(carrera.id),
         ),
         child: Padding(
           padding: const EdgeInsets.all(14),
