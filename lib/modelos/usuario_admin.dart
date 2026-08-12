@@ -6,7 +6,7 @@ class UsuarioAdmin {
     required this.apellidos,
     required this.email,
     required this.rol,
-    this.matriculaEmpleadoId,
+    this.matricula,
     this.telefono,
     this.estado,
     this.creadoEn,
@@ -17,7 +17,7 @@ class UsuarioAdmin {
   final String apellidos;
   final String email;
   final String rol;
-  final String? matriculaEmpleadoId;
+  final String? matricula;
   final String? telefono;
   final String? estado;
   final DateTime? creadoEn;
@@ -32,7 +32,7 @@ class UsuarioAdmin {
     rol: json['rol'] is Map
         ? (json['rol']['nombre'] as String? ?? '')
         : (json['rol'] as String? ?? ''),
-    matriculaEmpleadoId: json['matricula_empleado_id'] as String?,
+    matricula: json['matricula'] as String?,
     telefono: json['telefono'] as String?,
     estado: json['estado'] as String?,
     creadoEn: json['creadoEn'] != null
@@ -46,7 +46,7 @@ class UsuarioAdmin {
     'apellidos': apellidos,
     'email': email,
     'rol': rol,
-    'matricula_empleado_id': matriculaEmpleadoId,
+    'matricula': matricula,
     'telefono': telefono,
     'estado': estado,
     'creadoEn': creadoEn?.toIso8601String(),

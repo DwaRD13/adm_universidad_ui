@@ -77,7 +77,7 @@ class UsuariosProveedor extends ChangeNotifier {
             (u) =>
                 u.nombreCompleto.toLowerCase().contains(_textoBusqueda) ||
                 u.email.toLowerCase().contains(_textoBusqueda) ||
-                (u.matriculaEmpleadoId ?? '').toLowerCase().contains(
+                (u.matricula ?? '').toLowerCase().contains(
                   _textoBusqueda,
                 ),
           )

@@ -6,7 +6,7 @@ class AdminResumen {
   final int estudiantesActivos;
   final int totalProfesores;
   final int profesoresActivos;
-  final int seccionesActivas;
+  final int totalSecciones;
   final List<ActividadReciente> ultimasActividades;
 
   AdminResumen({
@@ -14,7 +14,7 @@ class AdminResumen {
     required this.estudiantesActivos,
     required this.totalProfesores,
     required this.profesoresActivos,
-    required this.seccionesActivas,
+    required this.totalSecciones,
     required this.ultimasActividades,
   });
 
@@ -24,7 +24,7 @@ class AdminResumen {
       estudiantesActivos: json['estudiantesActivos'] ?? 0,
       totalProfesores: json['totalProfesores'] ?? 0,
       profesoresActivos: json['profesoresActivos'] ?? 0,
-      seccionesActivas: json['seccionesActivas'] ?? 0,
+      totalSecciones: json['totalSecciones'] ?? 0,
       ultimasActividades:
           (json['ultimasActividades'] as List<dynamic>?)
               ?.map((e) => ActividadReciente.fromJson(e))
@@ -33,7 +33,6 @@ class AdminResumen {
     );
   }
 }
-
 
 class ActividadReciente {
   final IconData icono;

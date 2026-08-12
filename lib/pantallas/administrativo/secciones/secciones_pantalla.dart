@@ -186,14 +186,16 @@ class _TarjetaSeccion extends StatelessWidget {
   final Seccion seccion;
 
   Color _colorEstado(BuildContext context) {
-    switch (seccion.estado) {
-      case 'Abierta':
+    final estadoBackend = seccion.estado?.toUpperCase();
+
+    switch (estadoBackend) {
+      case 'ABIERTA':
         return context.estados.info;
-      case 'En Curso':
+      case 'EN CURSO':
         return context.estados.exito;
-      case 'Cerrada':
+      case 'CERRADA':
         return context.estados.advertencia;
-      case 'Finalizada':
+      case 'FINALIZADA':
         return context.estados.error;
       default:
         return context.colores.outline;
@@ -208,9 +210,7 @@ class _TarjetaSeccion extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(
-          Rutas.detalleSeccion(seccion.id!),
-        ),
+        onTap: () => context.push(Rutas.detalleSeccion(seccion.id!)),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -253,11 +253,11 @@ class _TarjetaSeccion extends StatelessWidget {
                             icono: Icons.meeting_room_rounded,
                             texto: seccion.aula!,
                           ),
-                        if (seccion.horario != null &&
-                            seccion.horario!.isNotEmpty)
+                        if (seccion.horarioDescripcion != null &&
+                            seccion.horarioDescripcion!.isNotEmpty)
                           _EtiquetaSecundaria(
                             icono: Icons.schedule_rounded,
-                            texto: seccion.horario!,
+                            texto: seccion.horarioDescripcion!,
                           ),
                         _EtiquetaSecundaria(
                           icono: Icons.people_rounded,
@@ -268,7 +268,10 @@ class _TarjetaSeccion extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     ChipEstado(
-                      texto: seccion.estado,
+                      texto: seccion.estado != null
+                          ? seccion.estado![0].toUpperCase() +
+                                seccion.estado!.substring(1).toLowerCase()
+                          : '',
                       tono: colorEstado == context.estados.info
                           ? TonoEstado.info
                           : colorEstado == context.estados.exito

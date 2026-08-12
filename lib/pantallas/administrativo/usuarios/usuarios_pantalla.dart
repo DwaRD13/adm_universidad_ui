@@ -279,12 +279,12 @@ class _TarjetaUsuario extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               // Indicador de matrícula / ID si existe
-              if (usuario.matriculaEmpleadoId != null &&
-                  usuario.matriculaEmpleadoId!.isNotEmpty)
+              if (usuario.matricula != null &&
+                  usuario.matricula!.isNotEmpty)
                 Chip(
                   avatar: const Icon(Icons.tag_rounded, size: 16),
                   label: Text(
-                    usuario.matriculaEmpleadoId!,
+                    usuario.matricula!,
                     style: context.textos.labelSmall,
                   ),
                   visualDensity: VisualDensity.compact,

@@ -32,9 +32,7 @@ class _ReportesPantallaState extends State<ReportesPantalla> {
     final resumen = proveedor.resumen;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reportes'),
-      ),
+      appBar: AppBar(title: const Text('Reportes')),
       body: SafeArea(
         child: VistaEstado(
           cargando: proveedor.cargando && resumen == null,
@@ -106,7 +104,7 @@ class _ResumenRapido extends StatelessWidget {
         Expanded(
           child: _MiniIndicador(
             icono: Icons.meeting_room_rounded,
-            valor: '${resumen.seccionesActivas}',
+            valor: '${resumen.totalSecciones}',
             etiqueta: 'Secciones',
             color: colores.tertiary,
           ),
@@ -213,44 +211,46 @@ class _CuadriculaReportes extends StatelessWidget {
       crossAxisSpacing: 12,
       childAspectRatio: 1.3,
       children: reportes
-          .map((r) => Card(
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => context.push(r.ruta),
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: r.color.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(r.icono, color: r.color, size: 24),
+          .map(
+            (r) => Card(
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => context.push(r.ruta),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: r.color.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const Spacer(),
-                        Text(
-                          r.titulo,
-                          style: context.textos.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Icon(r.icono, color: r.color, size: 24),
+                      ),
+                      const Spacer(),
+                      Text(
+                        r.titulo,
+                        style: context.textos.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          r.descripcion,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textos.bodySmall?.copyWith(
-                            color: context.colores.onSurfaceVariant,
-                          ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        r.descripcion,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textos.bodySmall?.copyWith(
+                          color: context.colores.onSurfaceVariant,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ))
+              ),
+            ),
+          )
           .toList(),
     );
   }

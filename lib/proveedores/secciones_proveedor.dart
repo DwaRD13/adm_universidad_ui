@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../modelos/materia.dart';
 import '../modelos/seccion.dart';
+import '../modelos/usuario.dart';
 import '../servicios/admin_servicio.dart';
 
 class SeccionesProveedor extends ChangeNotifier {
@@ -23,8 +25,13 @@ class SeccionesProveedor extends ChangeNotifier {
   String? get periodoSeleccionado => _periodoSeleccionado;
   String? _estadoSeleccionado;
   String? get estadoSeleccionado => _estadoSeleccionado;
-
   String _textoBusqueda = '';
+
+  // Catálogos para el formulario de creación
+  List<Materia> _materias = [];
+  List<Materia> get materias => _materias;
+  List<Usuario> _profesores = [];
+  List<Usuario> get profesores => _profesores;
 
   Future<void> cargar({bool silencioso = false}) async {
     if (!silencioso) {
@@ -50,11 +57,46 @@ class SeccionesProveedor extends ChangeNotifier {
   }
 
   Future<void> cargarCatalogos() async {
-    // Los periodos ya se obtienen en cargar().
+    try {
+      final materiasData = await _admin.get('/materias') as List;
+      _materias = materiasData
+          .map((e) => Materia.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final profesoresData = await _admin.get('/usuarios/rol/profesor') as List;
+      _profesores = profesoresData
+          .map((e) => Usuario.desdeJson(e as Map<String, dynamic>))
+          .toList();
+
+      notifyListeners();
+    } catch (e) {
+      // Podrías notificar el error o simplemente dejar las listas vacías
+      debugPrint('Error cargando catálogos: $e');
+    }
+  }
+
+  Future<void> crearSeccion(Map<String, dynamic> data) async {
+    await _admin.post('/secciones', body: data);
+    await cargar();
+  }
+
+  Future<Seccion?> obtenerSeccion(int id) async {
+    // Buscamos el índice en todas las secciones (sin importar los filtros actuales)
+    final index = _todasLasSecciones.indexWhere((s) => s.id == id);
+
+    if (index != -1) return _todasLasSecciones[index];
+
+    try {
+      final data = await _admin.get('/secciones/${id}'); 
+      return Seccion.fromJson(data as Map<String, dynamic>);
+    } catch (e) {
+      debugPrint('Error obteniendo sección $id: $e');
+      return null;
+    }
   }
 
   void filtrarTexto(String texto) {
-    _textoBusqueda = texto.toLowerCase();
+    _textoBusqueda = texto;
     _aplicarFiltro();
     notifyListeners();
   }
@@ -72,27 +114,30 @@ class SeccionesProveedor extends ChangeNotifier {
   }
 
   void _aplicarFiltro() {
-    var lista = _todasLasSecciones;
-    if (_periodoSeleccionado != null) {
-      lista = lista.where((s) => s.periodo == _periodoSeleccionado).toList();
-    }
-    if (_estadoSeleccionado != null) {
-      lista = lista.where((s) => s.estado == _estadoSeleccionado).toList();
-    }
-    if (_textoBusqueda.isNotEmpty) {
-      lista = lista
-          .where(
-            (s) =>
-                (s.materiaNombre ?? '').toLowerCase().contains(
-                  _textoBusqueda,
-                ) ||
-                (s.profesorNombre ?? '').toLowerCase().contains(
-                  _textoBusqueda,
-                ) ||
-                (s.aula ?? '').toLowerCase().contains(_textoBusqueda),
-          )
-          .toList();
-    }
-    _secciones = lista;
+    _secciones = _todasLasSecciones.where((s) {
+      // 1. Filtro de búsqueda por texto
+      if (_textoBusqueda.trim().isNotEmpty) {
+        final b = _textoBusqueda.toLowerCase();
+        final match =
+            (s.materiaNombre?.toLowerCase().contains(b) ?? false) ||
+            (s.profesorNombre?.toLowerCase().contains(b) ?? false) ||
+            (s.aula?.toLowerCase().contains(b) ?? false);
+        if (!match) return false;
+      }
+
+      // 2. Filtro por periodo
+      if (_periodoSeleccionado != null && s.periodo != _periodoSeleccionado) {
+        return false;
+      }
+
+      // 3. Filtro por estado (Usamos toUpperCase para igualar lo que manda el Backend)
+      if (_estadoSeleccionado != null) {
+        if (s.estado?.toUpperCase() != _estadoSeleccionado!.toUpperCase()) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
   }
 }

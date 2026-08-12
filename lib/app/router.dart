@@ -3,7 +3,11 @@ import 'package:adm_universidad_ui/pantallas/administrativo/dashboard/admin_dash
 import 'package:adm_universidad_ui/pantallas/administrativo/inscripciones/inscripciones_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/materias/materias_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/reportes/reportes_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/secciones/detalle_seccion_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/secciones/nueva_seccion_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/secciones/secciones_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/detalle_usuario_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/nuevo_usuarios_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/usuarios_pantalla.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -217,14 +221,12 @@ GoRouter crearRouter(SesionProveedor sesion) {
       ),
       GoRoute(
         path: Rutas.nuevoUsuario,
-        builder: (_, __) =>
-            const _PantallaEnConstruccion(titulo: 'Nuevo usuario'),
+        builder: (_, __) => const NuevoUsuarioPantalla(),
       ),
       GoRoute(
         path: '/admin/usuarios/:id',
-        builder: (_, estado) => _PantallaEnConstruccion(
-          titulo: 'Detalle usuario ${estado.pathParameters['id']}',
-        ),
+        builder: (_, estado) =>
+            DetalleUsuarioPantalla(id: int.parse(estado.pathParameters['id']!)),
       ),
 
       // Carreras
@@ -268,14 +270,12 @@ GoRouter crearRouter(SesionProveedor sesion) {
       ),
       GoRoute(
         path: Rutas.nuevaSeccion,
-        builder: (_, __) =>
-            const _PantallaEnConstruccion(titulo: 'Nueva sección'),
+        builder: (_, __) => const NuevaSeccionPantalla(),
       ),
       GoRoute(
         path: '/admin/secciones/:id',
-        builder: (_, estado) => _PantallaEnConstruccion(
-          titulo: 'Detalle sección ${estado.pathParameters['id']}',
-        ),
+        builder: (_, estado) =>
+            DetalleSeccionPantalla(id: int.parse(estado.pathParameters['id']!)),
       ),
 
       // Inscripciones

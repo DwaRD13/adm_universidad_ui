@@ -92,6 +92,7 @@ class _UniConnectAppState extends State<UniConnectApp> {
         ChangeNotifierProvider(create: (_) => MensajesProveedor(_estudiante)),
         ChangeNotifierProvider(create: (_) => PerfilProveedor(_estudiante)),
 
+        Provider<AdminServicio>(create: (_) => _admin),
         // Administrativo
         ChangeNotifierProvider(
           create: (_) => AdminDashboardProveedor(admin: _admin),

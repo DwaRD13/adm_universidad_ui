@@ -1,57 +1,59 @@
 class Seccion {
   final int? id;
   final int materiaId;
+  final String materiaNombre;
   final int profesorId;
+  final String profesorNombre;
   final String periodo;
   final int cupoMaximo;
   final String? aula;
-  final String? horario;
+  final String? horarioDescripcion;
   final String estado;
-
-  // Campos de visualización (join)
-  final String? materiaNombre;
-  final String? profesorNombre;
-  final int? inscritos;
+  final int inscritos;
 
   Seccion({
     this.id,
     required this.materiaId,
+    required this.materiaNombre,
     required this.profesorId,
+    required this.profesorNombre,
     required this.periodo,
     required this.cupoMaximo,
     this.aula,
-    this.horario,
+    this.horarioDescripcion,
     required this.estado,
-    this.materiaNombre,
-    this.profesorNombre,
-    this.inscritos,
+    this.inscritos = 0,
   });
 
-  factory Seccion.fromJson(Map<String, dynamic> json) => Seccion(
-    id: json['id'] as int?,
-    materiaId: json['materia_id'] as int,
-    profesorId: json['profesor_id'] as int,
-    periodo: json['periodo'] as String,
-    cupoMaximo: json['cupo_maximo'] as int,
-    aula: json['aula'] as String?,
-    horario: json['horario_descripcion'] as String?,
-    estado: json['estado'] as String,
-    materiaNombre: json['materia_nombre'] as String?,
-    profesorNombre: json['profesor_nombre'] as String?,
-    inscritos: json['inscritos'] as int?,
-  );
+  factory Seccion.fromJson(Map<String, dynamic> json) {
+    return Seccion(
+      id: json['id'] as int?,
+      materiaId: json['materiaId'] as int? ?? 0,
+      materiaNombre: json['materiaNombre'] as String? ?? '',
+      profesorId: json['profesorId'] as int? ?? 0,
+      profesorNombre: json['profesorNombre'] as String? ?? '',
+      periodo: json['periodo'] as String? ?? '',
+      cupoMaximo: json['cupoMaximo'] as int? ?? 0,
+      aula: json['aula'] as String?,
+      horarioDescripcion: json['horarioDescripcion'] as String?,
+      estado: json['estado'] as String? ?? '',
+      inscritos: json['inscritos'] as int? ?? 0,
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-    if (id != null) 'id': id,
-    'materia_id': materiaId,
-    'profesor_id': profesorId,
-    'periodo': periodo,
-    'cupo_maximo': cupoMaximo,
-    'aula': aula,
-    'horario_descripcion': horario,
-    'estado': estado,
-    'materia_nombre': materiaNombre,
-    'profesor_nombre': profesorNombre,
-    'inscritos': inscritos,
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'materiaId': materiaId,
+      'materiaNombre': materiaNombre,
+      'profesorId': profesorId,
+      'profesorNombre': profesorNombre,
+      'periodo': periodo,
+      'cupoMaximo': cupoMaximo,
+      'aula': aula,
+      'horarioDescripcion': horarioDescripcion,
+      'estado': estado,
+      'inscritos': inscritos,
+    };
+  }
 }

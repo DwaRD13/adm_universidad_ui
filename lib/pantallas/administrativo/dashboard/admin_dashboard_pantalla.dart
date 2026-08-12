@@ -220,7 +220,7 @@ class _IndicadoresGlobales extends StatelessWidget {
             icono: Icons.people_alt_rounded,
             valor: '${resumen.totalEstudiantes}',
             etiqueta: 'Estudiantes',
-            detalle: '${resumen.estudiantesActivos} activos',
+            detalle: '',
             color: context.colores.primary,
           ),
         ),
@@ -230,7 +230,7 @@ class _IndicadoresGlobales extends StatelessWidget {
             icono: Icons.school_rounded,
             valor: '${resumen.totalProfesores}',
             etiqueta: 'Profesores',
-            detalle: '${resumen.profesoresActivos} activos',
+            detalle: '',
             color: estados.info,
           ),
         ),
@@ -238,7 +238,7 @@ class _IndicadoresGlobales extends StatelessWidget {
         Expanded(
           child: _Indicador(
             icono: Icons.meeting_room_rounded,
-            valor: '${resumen.seccionesActivas}',
+            valor: '${resumen.totalSecciones}',
             etiqueta: 'Secciones',
             detalle: 'Periodo actual',
             color: estados.exito,
