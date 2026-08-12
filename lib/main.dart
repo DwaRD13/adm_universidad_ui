@@ -1,3 +1,11 @@
+import 'package:adm_universidad_ui/proveedores/admin_dashboard_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/carreras_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/inscripciones_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/materias_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/reportes_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/secciones_proveedor.dart';
+import 'package:adm_universidad_ui/proveedores/usuarios_proveedor.dart';
+import 'package:adm_universidad_ui/servicios/admin_servicio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -48,6 +56,7 @@ class _UniConnectAppState extends State<UniConnectApp> {
     api: _api,
     auth: AuthServicio(_api),
   );
+  late final AdminServicio _admin = AdminServicio(_api);
   late final TemaProveedor _tema = TemaProveedor();
   late final GoRouter _router = crearRouter(_sesion);
 
@@ -84,6 +93,22 @@ class _UniConnectAppState extends State<UniConnectApp> {
         ChangeNotifierProvider(create: (_) => MaterialesProveedor(_estudiante)),
         ChangeNotifierProvider(create: (_) => MensajesProveedor(_estudiante)),
         ChangeNotifierProvider(create: (_) => PerfilProveedor(_estudiante)),
+
+        Provider<AdminServicio>(create: (_) => _admin),
+        // Administrativo
+        ChangeNotifierProvider(
+          create: (_) => AdminDashboardProveedor(admin: _admin),
+        ),
+        ChangeNotifierProvider(create: (_) => CarrerasProveedor(admin: _admin)),
+        ChangeNotifierProvider(create: (_) => MateriasProveedor(admin: _admin)),
+        ChangeNotifierProvider(
+          create: (_) => SeccionesProveedor(admin: _admin),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => InscripcionesProveedor(admin: _admin),
+        ),
+        ChangeNotifierProvider(create: (_) => ReportesProveedor(admin: _admin)),
+        ChangeNotifierProvider(create: (_) => UsuariosProveedor(admin: _admin)),
       ],
       child: Consumer<TemaProveedor>(
         builder: (context, tema, _) => MaterialApp.router(
