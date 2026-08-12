@@ -115,11 +115,11 @@ GoRouter crearRouter(SesionProveedor sesion) {
         builder: (_, state) => const AgendaProfesorScreen(),
       ),
 
-      GoRoute(
+      
+GoRoute(
         path: Rutas.tareasProfesor,
         builder: (_, state) => const TareasProfesorScreen(),
       ),
-
       GoRoute(
         path: Rutas.materialesProfesor,
         builder: (_, state) => const MaterialesProfesorScreen(),

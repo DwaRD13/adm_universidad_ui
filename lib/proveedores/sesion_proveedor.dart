@@ -39,6 +39,10 @@ class SesionProveedor extends ChangeNotifier {
   String? get error => _error;
   bool get expirada => _expirada;
 
+  /// Expuesto para que los servicios de cada módulo (Profesor, Estudiante) puedan
+  /// crear su instancia sin depender de un Provider<ApiCliente> aparte.
+  ApiCliente get api => _api;
+
   /// Restaura la sesión guardada al arrancar la aplicación.
   Future<void> restaurar() async {
     final token = await _almacen.leerToken();
