@@ -1,3 +1,16 @@
+import 'package:adm_universidad_ui/pantallas/administrativo/carreras/carreras_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/carreras/crear_carreras_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/carreras/detalle_carrera_pantalla.dart'; // ← añadida
+import 'package:adm_universidad_ui/pantallas/administrativo/dashboard/admin_dashboard_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/inscripciones/inscripciones_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/materias/materias_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/reportes/reportes_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/secciones/detalle_seccion_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/secciones/nueva_seccion_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/secciones/secciones_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/detalle_usuario_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/nuevo_usuarios_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/usuarios/usuarios_pantalla.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,8 +34,12 @@ import '../proveedores/sesion_proveedor.dart';
 class Rutas {
   const Rutas._();
 
+  // Genéricas
   static const arranque = '/';
   static const login = '/login';
+  static const rolPendiente = '/rol-pendiente';
+
+  // Estudiante
   static const dashboard = '/estudiante';
   static const horario = '/estudiante/horario';
   static const calificaciones = '/estudiante/calificaciones';
@@ -32,13 +49,43 @@ class Rutas {
   static const asistencia = '/estudiante/asistencia';
   static const tareas = '/estudiante/tareas';
   static const materiales = '/estudiante/materiales';
-  static const rolPendiente = '/rol-pendiente';
 
   static String hilo(int usuarioId) => '/estudiante/mensajes/$usuarioId';
+
+  // Administrativo
+  static const adminDashboard = '/admin';
+  static const adminUsuarios = '/admin/usuarios';
+  static const adminCarreras = '/admin/carreras';
+  static const adminMaterias = '/admin/materias';
+  static const adminSecciones = '/admin/secciones';
+  static const adminInscripciones = '/admin/inscripciones';
+  static const adminReportes = '/admin/reportes';
+
+  // Detalles y creación
+  static const nuevoUsuario = '/admin/usuarios/nuevo';
+  static String detalleUsuario(int id) => '/admin/usuarios/$id';
+
+  static const nuevaCarrera = '/admin/carreras/nueva';
+  static String editarCarrera(int id) => '/admin/carreras/$id/editar';
+  static String detalleCarrera(int id) => '/admin/carreras/$id';
+
+  static const nuevaMateria = '/admin/materias/nueva';
+  static String detalleMateria(int id) => '/admin/materias/$id';
+
+  static const nuevaSeccion = '/admin/secciones/nueva';
+  static String detalleSeccion(int id) => '/admin/secciones/$id';
+
+  static String detalleInscripcion(int id) => '/admin/inscripciones/$id';
+
+  // Reportes específicos
+  static const reporteRendimiento = '/admin/reportes/rendimiento';
+  static const reporteAsistencia = '/admin/reportes/asistencia';
+  static const reporteInscripciones = '/admin/reportes/inscripciones';
+  static const reporteDemografia = '/admin/reportes/demografia';
+  static const reporteCargaHoraria = '/admin/reportes/carga-horaria';
+  static const reporteCalificaciones = '/admin/reportes/calificaciones';
 }
 
-/// Construye el router escuchando a la sesión: cuando el usuario entra o sale,
-/// `refreshListenable` reevalúa el redirect y lleva a la pantalla correcta.
 GoRouter crearRouter(SesionProveedor sesion) {
   return GoRouter(
     initialLocation: Rutas.arranque,
@@ -46,7 +93,6 @@ GoRouter crearRouter(SesionProveedor sesion) {
     redirect: (context, estado) {
       final ruta = estado.matchedLocation;
 
-      // Mientras se restaura la sesión guardada no se decide nada.
       if (sesion.comprobando) {
         return ruta == Rutas.arranque ? null : Rutas.arranque;
       }
@@ -55,32 +101,50 @@ GoRouter crearRouter(SesionProveedor sesion) {
         return ruta == Rutas.login ? null : Rutas.login;
       }
 
-      // Los paneles de Profesor y Administrativo aún no existen.
       final usuario = sesion.usuario!;
-      if (!usuario.esEstudiante) {
-        return ruta == Rutas.rolPendiente ? null : Rutas.rolPendiente;
+
+      if (usuario.esAdministrativo) {
+        if (ruta.startsWith('/admin') ||
+            ruta == Rutas.login ||
+            ruta == Rutas.arranque) {
+          if (ruta == Rutas.login || ruta == Rutas.arranque) {
+            return Rutas.adminDashboard;
+          }
+          return null;
+        }
+        return Rutas.adminDashboard;
       }
 
-      if (ruta == Rutas.login ||
-          ruta == Rutas.arranque ||
-          ruta == Rutas.rolPendiente) {
-        return Rutas.dashboard;
+      if (usuario.esEstudiante) {
+        if (ruta.startsWith('/estudiante')) {
+          if (ruta == Rutas.login || ruta == Rutas.arranque) {
+            return Rutas.dashboard;
+          }
+          return null;
+        }
+        if (ruta.startsWith('/admin')) {
+          return Rutas.dashboard;
+        }
+        return ruta == Rutas.login || ruta == Rutas.arranque
+            ? Rutas.dashboard
+            : null;
       }
-      return null;
+
+      return ruta == Rutas.rolPendiente ? null : Rutas.rolPendiente;
     },
     routes: [
+      // Genéricas
       GoRoute(
         path: Rutas.arranque,
-        builder: (_, _) => const ArranquePantalla(),
+        builder: (_, __) => const ArranquePantalla(),
       ),
-      GoRoute(path: Rutas.login, builder: (_, _) => const LoginPantalla()),
+      GoRoute(path: Rutas.login, builder: (_, __) => const LoginPantalla()),
       GoRoute(
         path: Rutas.rolPendiente,
-        builder: (_, _) => const RolPendientePantalla(),
+        builder: (_, __) => const RolPendientePantalla(),
       ),
 
-      // Los cinco destinos de la barra inferior comparten cascarón para que la
-      // navegación entre ellos no reconstruya el Scaffold.
+      // Estudiante con barra inferior
       ShellRoute(
         builder: (context, estado, hijo) =>
             CascaronEstudiante(rutaActual: estado.matchedLocation, child: hijo),
@@ -113,19 +177,19 @@ GoRouter crearRouter(SesionProveedor sesion) {
         ],
       ),
 
-      // Módulos secundarios: se abren sobre el cascarón, con botón de volver.
+      // Módulos secundarios estudiante
       GoRoute(
         path: Rutas.inscripcion,
-        builder: (_, _) => const InscripcionPantalla(),
+        builder: (_, __) => const InscripcionPantalla(),
       ),
       GoRoute(
         path: Rutas.asistencia,
-        builder: (_, _) => const AsistenciaPantalla(),
+        builder: (_, __) => const AsistenciaPantalla(),
       ),
-      GoRoute(path: Rutas.tareas, builder: (_, _) => const TareasPantalla()),
+      GoRoute(path: Rutas.tareas, builder: (_, __) => const TareasPantalla()),
       GoRoute(
         path: Rutas.materiales,
-        builder: (_, _) => const MaterialesPantalla(),
+        builder: (_, __) => const MaterialesPantalla(),
       ),
       GoRoute(
         path: '/estudiante/mensajes/:usuarioId',
@@ -133,12 +197,135 @@ GoRouter crearRouter(SesionProveedor sesion) {
           usuarioId: int.parse(estado.pathParameters['usuarioId']!),
         ),
       ),
+
+      // Administrativo
+      GoRoute(
+        path: Rutas.adminDashboard,
+        builder: (_, __) => const AdminDashboardPantalla(),
+      ),
+
+      // Usuarios
+      GoRoute(
+        path: Rutas.adminUsuarios,
+        builder: (_, __) => const UsuariosPantalla(),
+      ),
+      GoRoute(
+        path: Rutas.nuevoUsuario,
+        builder: (_, __) => const NuevoUsuarioPantalla(),
+      ),
+      GoRoute(
+        path: '/admin/usuarios/:id',
+        builder: (_, estado) =>
+            DetalleUsuarioPantalla(id: int.parse(estado.pathParameters['id']!)),
+      ),
+
+      // Carreras
+      GoRoute(
+        path: Rutas.adminCarreras,
+        builder: (_, __) => const CarrerasPantalla(),
+        routes: [
+          GoRoute(
+            path: 'nueva', // → /admin/carreras/nueva
+            builder: (_, __) => const CrearEditarCarreraPantalla(),
+          ),
+          GoRoute(
+            path: ':id', // → /admin/carreras/:id
+            builder: (_, estado) => DetalleCarreraPantalla(
+              id: int.parse(estado.pathParameters['id']!),
+            ),
+            routes: [
+              GoRoute(
+                path: 'editar', // → /admin/carreras/:id/editar
+                builder: (_, estado) => CrearEditarCarreraPantalla(
+                  id: int.parse(estado.pathParameters['id']!),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // Materias
+      GoRoute(
+        path: Rutas.adminMaterias,
+        builder: (_, __) => const MateriasPantalla(),
+      ),
+      GoRoute(
+        path: Rutas.nuevaMateria,
+        builder: (_, __) =>
+            const _PantallaEnConstruccion(titulo: 'Nueva materia'),
+      ),
+      GoRoute(
+        path: '/admin/materias/:id',
+        builder: (_, estado) => _PantallaEnConstruccion(
+          titulo: 'Detalle materia ${estado.pathParameters['id']}',
+        ),
+      ),
+
+      // Secciones
+      GoRoute(
+        path: Rutas.adminSecciones,
+        builder: (_, __) => const SeccionesPantalla(),
+      ),
+      GoRoute(
+        path: Rutas.nuevaSeccion,
+        builder: (_, __) => const NuevaSeccionPantalla(),
+      ),
+      GoRoute(
+        path: '/admin/secciones/:id',
+        builder: (_, estado) =>
+            DetalleSeccionPantalla(id: int.parse(estado.pathParameters['id']!)),
+      ),
+
+      // Inscripciones
+      GoRoute(
+        path: Rutas.adminInscripciones,
+        builder: (_, __) => const InscripcionesPantalla(),
+      ),
+      GoRoute(
+        path: '/admin/inscripciones/:id',
+        builder: (_, estado) => _PantallaEnConstruccion(
+          titulo: 'Detalle inscripción ${estado.pathParameters['id']}',
+        ),
+      ),
+
+      // Reportes
+      GoRoute(
+        path: Rutas.adminReportes,
+        builder: (_, __) => const ReportesPantalla(),
+      ),
+      GoRoute(
+        path: Rutas.reporteRendimiento,
+        builder: (_, __) =>
+            const _PantallaEnConstruccion(titulo: 'Rendimiento académico'),
+      ),
+      GoRoute(
+        path: Rutas.reporteAsistencia,
+        builder: (_, __) => const _PantallaEnConstruccion(titulo: 'Asistencia'),
+      ),
+      GoRoute(
+        path: Rutas.reporteInscripciones,
+        builder: (_, __) =>
+            const _PantallaEnConstruccion(titulo: 'Inscripciones'),
+      ),
+      GoRoute(
+        path: Rutas.reporteDemografia,
+        builder: (_, __) => const _PantallaEnConstruccion(titulo: 'Demografía'),
+      ),
+      GoRoute(
+        path: Rutas.reporteCargaHoraria,
+        builder: (_, __) =>
+            const _PantallaEnConstruccion(titulo: 'Carga horaria'),
+      ),
+      GoRoute(
+        path: Rutas.reporteCalificaciones,
+        builder: (_, __) =>
+            const _PantallaEnConstruccion(titulo: 'Calificaciones finales'),
+      ),
     ],
   );
 }
 
-/// Cambiar de pestaña en la barra inferior no debe animar como si fuera una
-/// pantalla nueva: se mantiene el cambio instantáneo.
 CustomTransitionPage<void> _sinTransicion(GoRouterState estado, Widget hijo) {
   return CustomTransitionPage(
     key: estado.pageKey,
@@ -147,4 +334,26 @@ CustomTransitionPage<void> _sinTransicion(GoRouterState estado, Widget hijo) {
         FadeTransition(opacity: animacion, child: hijo),
     transitionDuration: const Duration(milliseconds: 180),
   );
+}
+
+class _PantallaEnConstruccion extends StatelessWidget {
+  final String titulo;
+  const _PantallaEnConstruccion({required this.titulo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(titulo)),
+      body: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.construction, size: 64, color: Colors.orange),
+            SizedBox(height: 16),
+            Text('Pantalla en construcción', style: TextStyle(fontSize: 18)),
+          ],
+        ),
+      ),
+    );
+  }
 }
