@@ -31,9 +31,7 @@ class _AdminDashboardPantallaState extends State<AdminDashboardPantalla> {
   @override
   Widget build(BuildContext context) {
     final proveedor = context.watch<AdminDashboardProveedor>();
-
     final resumen = proveedor.resumen;
-
     final usuario = context.watch<SesionProveedor>().usuario;
 
     String nombreAdmin = usuario?.nombres != null
@@ -67,8 +65,6 @@ class _AdminDashboardPantallaState extends State<AdminDashboardPantalla> {
 
                   if (resumen != null) ...[
                     _IndicadoresGlobales(resumen: resumen),
-                    const SizedBox(height: 20),
-                    _ActividadReciente(resumen: resumen),
                     const SizedBox(height: 20),
                     const EncabezadoSeccion(
                       titulo: 'Accesos rápidos',
@@ -298,105 +294,6 @@ class _Indicador extends StatelessWidget {
             ),
             Text(
               detalle,
-              style: context.textos.labelSmall?.copyWith(
-                color: context.colores.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Actividad reciente
-// ---------------------------------------------------------------------------
-class _ActividadReciente extends StatelessWidget {
-  const _ActividadReciente({required this.resumen});
-
-  final AdminResumen resumen;
-
-  @override
-  Widget build(BuildContext context) {
-    if (resumen.ultimasActividades.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.auto_awesome_rounded, color: context.estados.info),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'No hay actividad reciente que mostrar.',
-                  style: context.textos.bodyMedium,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const EncabezadoSeccion(
-          titulo: 'Actividad reciente',
-          subtitulo: 'Lo último que ha sucedido',
-        ),
-        const SizedBox(height: 8),
-        ...List.generate(resumen.ultimasActividades.length, (i) {
-          final act = resumen.ultimasActividades[i];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: _FilaActividad(actividad: act),
-          );
-        }),
-        Center(
-          child: TextButton(
-            onPressed: () {},
-            child: const Text('Ver todo el historial'),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FilaActividad extends StatelessWidget {
-  const _FilaActividad({required this.actividad});
-
-  final ActividadReciente actividad;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Icon(actividad.icono, size: 22, color: context.colores.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(actividad.titulo, style: context.textos.titleSmall),
-                  const SizedBox(height: 2),
-                  Text(
-                    actividad.descripcion,
-                    style: context.textos.bodySmall?.copyWith(
-                      color: context.colores.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              actividad.hora,
               style: context.textos.labelSmall?.copyWith(
                 color: context.colores.onSurfaceVariant,
               ),

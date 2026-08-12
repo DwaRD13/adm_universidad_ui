@@ -1,4 +1,6 @@
 import 'package:adm_universidad_ui/pantallas/administrativo/carreras/carreras_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/carreras/crear_carreras_pantalla.dart';
+import 'package:adm_universidad_ui/pantallas/administrativo/carreras/detalle_carrera_pantalla.dart'; // ← añadida
 import 'package:adm_universidad_ui/pantallas/administrativo/dashboard/admin_dashboard_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/inscripciones/inscripciones_pantalla.dart';
 import 'package:adm_universidad_ui/pantallas/administrativo/materias/materias_pantalla.dart';
@@ -59,11 +61,12 @@ class Rutas {
   static const adminInscripciones = '/admin/inscripciones';
   static const adminReportes = '/admin/reportes';
 
-  // Detalles y creación (se deben implementar las pantallas correspondientes)
+  // Detalles y creación
   static const nuevoUsuario = '/admin/usuarios/nuevo';
   static String detalleUsuario(int id) => '/admin/usuarios/$id';
 
   static const nuevaCarrera = '/admin/carreras/nueva';
+  static String editarCarrera(int id) => '/admin/carreras/$id/editar';
   static String detalleCarrera(int id) => '/admin/carreras/$id';
 
   static const nuevaMateria = '/admin/materias/nueva';
@@ -74,7 +77,7 @@ class Rutas {
 
   static String detalleInscripcion(int id) => '/admin/inscripciones/$id';
 
-  // Reportes específicos (puedes cambiar las rutas según tus pantallas)
+  // Reportes específicos
   static const reporteRendimiento = '/admin/reportes/rendimiento';
   static const reporteAsistencia = '/admin/reportes/asistencia';
   static const reporteInscripciones = '/admin/reportes/inscripciones';
@@ -83,7 +86,6 @@ class Rutas {
   static const reporteCalificaciones = '/admin/reportes/calificaciones';
 }
 
-/// Construye el router escuchando a la sesión.
 GoRouter crearRouter(SesionProveedor sesion) {
   return GoRouter(
     initialLocation: Rutas.arranque,
@@ -91,7 +93,6 @@ GoRouter crearRouter(SesionProveedor sesion) {
     redirect: (context, estado) {
       final ruta = estado.matchedLocation;
 
-      // Mientras se restaura la sesión guardada no se decide nada.
       if (sesion.comprobando) {
         return ruta == Rutas.arranque ? null : Rutas.arranque;
       }
@@ -102,18 +103,15 @@ GoRouter crearRouter(SesionProveedor sesion) {
 
       final usuario = sesion.usuario!;
 
-      // Redirigir según el rol
       if (usuario.esAdministrativo) {
-        // Si ya está en una ruta admin o en login/arranque, permitir (y redirigir a admin si está en login)
         if (ruta.startsWith('/admin') ||
             ruta == Rutas.login ||
             ruta == Rutas.arranque) {
           if (ruta == Rutas.login || ruta == Rutas.arranque) {
             return Rutas.adminDashboard;
           }
-          return null; // ya está en admin
+          return null;
         }
-        // Si está en rutas de estudiante o rol pendiente, llevarlo al dashboard admin
         return Rutas.adminDashboard;
       }
 
@@ -132,13 +130,10 @@ GoRouter crearRouter(SesionProveedor sesion) {
             : null;
       }
 
-      // Profesor u otros roles no implementados → rol pendiente
       return ruta == Rutas.rolPendiente ? null : Rutas.rolPendiente;
     },
     routes: [
-      // -----------------------------------------------------------------------
       // Genéricas
-      // -----------------------------------------------------------------------
       GoRoute(
         path: Rutas.arranque,
         builder: (_, __) => const ArranquePantalla(),
@@ -149,9 +144,7 @@ GoRouter crearRouter(SesionProveedor sesion) {
         builder: (_, __) => const RolPendientePantalla(),
       ),
 
-      // -----------------------------------------------------------------------
-      // Rutas de Estudiante (con barra inferior)
-      // -----------------------------------------------------------------------
+      // Estudiante con barra inferior
       ShellRoute(
         builder: (context, estado, hijo) =>
             CascaronEstudiante(rutaActual: estado.matchedLocation, child: hijo),
@@ -184,7 +177,7 @@ GoRouter crearRouter(SesionProveedor sesion) {
         ],
       ),
 
-      // Módulos secundarios de estudiante
+      // Módulos secundarios estudiante
       GoRoute(
         path: Rutas.inscripcion,
         builder: (_, __) => const InscripcionPantalla(),
@@ -205,10 +198,7 @@ GoRouter crearRouter(SesionProveedor sesion) {
         ),
       ),
 
-      // -----------------------------------------------------------------------
-      // Rutas de Administrativo
-      // -----------------------------------------------------------------------
-      // Dashboard
+      // Administrativo
       GoRoute(
         path: Rutas.adminDashboard,
         builder: (_, __) => const AdminDashboardPantalla(),
@@ -233,17 +223,26 @@ GoRouter crearRouter(SesionProveedor sesion) {
       GoRoute(
         path: Rutas.adminCarreras,
         builder: (_, __) => const CarrerasPantalla(),
-      ),
-      GoRoute(
-        path: Rutas.nuevaCarrera,
-        builder: (_, __) =>
-            const _PantallaEnConstruccion(titulo: 'Nueva carrera'),
-      ),
-      GoRoute(
-        path: '/admin/carreras/:id',
-        builder: (_, estado) => _PantallaEnConstruccion(
-          titulo: 'Detalle carrera ${estado.pathParameters['id']}',
-        ),
+        routes: [
+          GoRoute(
+            path: 'nueva', // → /admin/carreras/nueva
+            builder: (_, __) => const CrearEditarCarreraPantalla(),
+          ),
+          GoRoute(
+            path: ':id', // → /admin/carreras/:id
+            builder: (_, estado) => DetalleCarreraPantalla(
+              id: int.parse(estado.pathParameters['id']!),
+            ),
+            routes: [
+              GoRoute(
+                path: 'editar', // → /admin/carreras/:id/editar
+                builder: (_, estado) => CrearEditarCarreraPantalla(
+                  id: int.parse(estado.pathParameters['id']!),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
 
       // Materias
@@ -295,7 +294,6 @@ GoRouter crearRouter(SesionProveedor sesion) {
         path: Rutas.adminReportes,
         builder: (_, __) => const ReportesPantalla(),
       ),
-      // Reportes específicos (placeholder)
       GoRoute(
         path: Rutas.reporteRendimiento,
         builder: (_, __) =>
@@ -328,8 +326,6 @@ GoRouter crearRouter(SesionProveedor sesion) {
   );
 }
 
-/// Cambiar de pestaña en la barra inferior no debe animar como si fuera una
-/// pantalla nueva: se mantiene el cambio instantáneo.
 CustomTransitionPage<void> _sinTransicion(GoRouterState estado, Widget hijo) {
   return CustomTransitionPage(
     key: estado.pageKey,
@@ -340,8 +336,6 @@ CustomTransitionPage<void> _sinTransicion(GoRouterState estado, Widget hijo) {
   );
 }
 
-/// Pantalla de placeholder para rutas aún no implementadas.
-/// Reemplázala por las pantallas reales cuando las desarrolles.
 class _PantallaEnConstruccion extends StatelessWidget {
   final String titulo;
   const _PantallaEnConstruccion({required this.titulo});

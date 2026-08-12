@@ -63,12 +63,12 @@ class _CarrerasPantallaState extends State<CarrerasPantalla> {
                         icon: const Icon(Icons.clear_rounded),
                         onPressed: () {
                           _busquedaCtrl.clear();
-                          proveedor.filtrar('');
+                          proveedor.filtrarTexto('');
                         },
                       )
                     : null,
               ),
-              onChanged: (texto) => proveedor.filtrar(texto),
+              onChanged: (texto) => proveedor.filtrarTexto(texto),
             ),
           ),
           // Lista
