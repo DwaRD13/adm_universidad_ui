@@ -30,6 +30,13 @@ import '../pantallas/login/login_pantalla.dart';
 import '../pantallas/rol_pendiente_pantalla.dart';
 import '../proveedores/sesion_proveedor.dart';
 
+// NUEVAS IMPORTACIONES DE PROFESORES
+import '../pantallas/Profesores/dashboard_profesor.dart';
+import '../pantallas/Profesores/agenda_screen.dart';
+import '../pantallas/Profesores/materiales_screen.dart';
+import '../pantallas/Profesores/mensajes_screen.dart';
+import '../pantallas/Profesores/tareas_screen.dart';
+
 /// Rutas de la aplicación.
 class Rutas {
   const Rutas._();
@@ -49,6 +56,13 @@ class Rutas {
   static const asistencia = '/estudiante/asistencia';
   static const tareas = '/estudiante/tareas';
   static const materiales = '/estudiante/materiales';
+
+  // RUTAS PARA PROFESORES
+  static const dashboardProfesor = '/profesor';
+  static const agendaProfesor = '/profesor/agenda';
+  static const tareasProfesor = '/profesor/tareas';
+  static const materialesProfesor = '/profesor/materiales';
+  static const mensajesProfesor = '/profesor/mensajes';
 
   static String hilo(int usuarioId) => '/estudiante/mensajes/$usuarioId';
 
@@ -103,6 +117,7 @@ GoRouter crearRouter(SesionProveedor sesion) {
 
       final usuario = sesion.usuario!;
 
+      // Administrativo
       if (usuario.esAdministrativo) {
         if (ruta.startsWith('/admin') ||
             ruta == Rutas.login ||
@@ -115,6 +130,20 @@ GoRouter crearRouter(SesionProveedor sesion) {
         return Rutas.adminDashboard;
       }
 
+      // Profesor
+      if (usuario.esProfesor) {
+        if (ruta.startsWith('/profesor')) {
+          return null;
+        }
+        if (ruta == Rutas.login ||
+            ruta == Rutas.arranque ||
+            ruta == Rutas.rolPendiente) {
+          return Rutas.dashboardProfesor;
+        }
+        return null;
+      }
+
+      // Estudiante
       if (usuario.esEstudiante) {
         if (ruta.startsWith('/estudiante')) {
           if (ruta == Rutas.login || ruta == Rutas.arranque) {
@@ -142,6 +171,28 @@ GoRouter crearRouter(SesionProveedor sesion) {
       GoRoute(
         path: Rutas.rolPendiente,
         builder: (_, __) => const RolPendientePantalla(),
+      ),
+
+      // Profesor
+      GoRoute(
+        path: Rutas.dashboardProfesor,
+        builder: (_, state) => const DashboardProfesor(),
+      ),
+      GoRoute(
+        path: Rutas.agendaProfesor,
+        builder: (_, state) => const AgendaProfesorScreen(),
+      ),
+      GoRoute(
+        path: Rutas.tareasProfesor,
+        builder: (_, state) => const TareasProfesorScreen(),
+      ),
+      GoRoute(
+        path: Rutas.materialesProfesor,
+        builder: (_, state) => const MaterialesProfesorScreen(),
+      ),
+      GoRoute(
+        path: Rutas.mensajesProfesor,
+        builder: (_, state) => const MensajesProfesorScreen(),
       ),
 
       // Estudiante con barra inferior
