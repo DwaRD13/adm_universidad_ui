@@ -7,6 +7,14 @@ import '../modelos/profesor/seccion_profesor.dart';
 import '../modelos/profesor/tarea_profesor.dart';
 import '../modelos/usuario.dart';
 import '../nucleo/api_cliente.dart';
+import '../modelos/profesor/materia_profesor.dart';
+import '../modelos/profesor/asistencia_profesor.dart';
+import '../modelos/profesor/calificacion_profesor.dart';
+import '../modelos/profesor/estudiante_asistencia_profesor.dart';
+import '../modelos/profesor/registro_asistencia_profesor.dart';
+import '../modelos/profesor/estudiante_calificacion_profesor.dart';
+import '../modelos/profesor/registro_calificacion_profesor.dart';
+
 
 class ProfesorServicio {
   const ProfesorServicio(this._api);
@@ -22,6 +30,61 @@ class ProfesorServicio {
     final json = await _api.get('/api/profesor/secciones') as List<dynamic>;
     return json.map((e) => SeccionProfesor.desdeJson(e as Map<String, dynamic>)).toList();
   }
+
+  Future<List<MateriaProfesor>> materias() async {
+    final json = await _api.get('/api/profesor/materias') as List<dynamic>;
+    return json.map((e) => MateriaProfesor.desdeJson(e as Map<String, dynamic>,),).toList();
+    }
+  
+  Future<List<AsistenciaProfesor>> asistencia() async {
+  final json = await _api.get('/api/profesor/asistencia') as List<dynamic>;
+      return json.map((e) => AsistenciaProfesor.desdeJson(e as Map<String, dynamic>,),).toList();
+}
+
+Future<List<EstudianteAsistenciaProfesor>> estudiantesDeSeccion(int seccionId, DateTime fecha) async {
+  final json = await _api.get('/api/profesor/secciones/$seccionId/estudiantes'
+'?fecha=${fecha.toIso8601String().split('T').first}',) as List<dynamic>;
+  return json.map((e) => EstudianteAsistenciaProfesor.desdeJson(e as Map<String, dynamic>,),).toList();
+}
+
+Future<List<CalificacionProfesor>> calificaciones() async {
+  final json = await _api.get('/api/profesor/calificaciones') as List<dynamic>;
+      return json.map((e) => CalificacionProfesor.desdeJson(e as Map<String, dynamic>,),).toList();
+}
+
+Future<List<EstudianteCalificacionProfesor>>calificacionesSeccion(int seccionId,) async {
+  final json = await _api.get('/api/profesor/secciones/$seccionId/calificaciones',) as List<dynamic>;
+  return json.map((e) => EstudianteCalificacionProfesor.desdeJson(e as Map<String, dynamic>,),).toList();
+}
+
+Future<void> registrarAsistencia({
+  required int seccionId,
+  required DateTime fecha,
+  required List<RegistroAsistenciaProfesor> registros,
+}) async {
+    await _api.post('/api/profesor/asistencia',{
+      'seccionId': seccionId,
+      'fecha': fecha.toIso8601String().split('T').first,
+      'registros': registros.map((e) => e.aJson()).toList(),
+    },
+  );
+}
+
+Future<void> registrarCalificaciones({
+  required int seccionId,
+  required List<
+          RegistroCalificacionProfesor>
+      registros,
+}) async {
+  await _api.post(
+    '/api/profesor/calificaciones',
+    {
+      'seccionId': seccionId,
+      'registros':
+          registros.map((e) => e.aJson()).toList(),
+    },
+  );
+}
 
   Future<List<Usuario>> contactos() async {
     final json = await _api.get('/api/profesor/contactos') as List<dynamic>;

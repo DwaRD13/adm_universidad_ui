@@ -36,6 +36,10 @@ import '../pantallas/Profesores/agenda_screen.dart';
 import '../pantallas/Profesores/materiales_screen.dart';
 import '../pantallas/Profesores/mensajes_screen.dart';
 import '../pantallas/Profesores/tareas_screen.dart';
+import '../pantallas/Profesores/materias_profesor_pantalla.dart';
+import '../pantallas/Profesores/asistencia_profesor_pantalla.dart';
+import '../pantallas/Profesores/calificaciones_profesor_pantalla.dart';
+import '../pantallas/Profesores/cascaron_profesor.dart';
 
 /// Rutas de la aplicación.
 class Rutas {
@@ -63,6 +67,9 @@ class Rutas {
   static const tareasProfesor = '/profesor/tareas';
   static const materialesProfesor = '/profesor/materiales';
   static const mensajesProfesor = '/profesor/mensajes';
+  static const materiasProfesor = '/profesor/materias';
+  static const asistenciaProfesor ='/profesor/asistencia';
+  static const calificacionesProfesor ='/profesor/calificaciones';
 
   static String hilo(int usuarioId) => '/estudiante/mensajes/$usuarioId';
 
@@ -172,29 +179,83 @@ GoRouter crearRouter(SesionProveedor sesion) {
         path: Rutas.rolPendiente,
         builder: (_, __) => const RolPendientePantalla(),
       ),
-
+//AAAAAAAAAAAAAAAAAAAAAAA
       // Profesor
-      GoRoute(
-        path: Rutas.dashboardProfesor,
-        builder: (_, state) => const DashboardProfesor(),
-      ),
       GoRoute(
         path: Rutas.agendaProfesor,
         builder: (_, state) => const AgendaProfesorScreen(),
-      ),
-      GoRoute(
-        path: Rutas.tareasProfesor,
-        builder: (_, state) => const TareasProfesorScreen(),
       ),
       GoRoute(
         path: Rutas.materialesProfesor,
         builder: (_, state) => const MaterialesProfesorScreen(),
       ),
       GoRoute(
-        path: Rutas.mensajesProfesor,
-        builder: (_, state) => const MensajesProfesorScreen(),
+        path: Rutas.asistenciaProfesor,
+        builder: (_, state) => const AsistenciaProfesorPantalla(),
       ),
-
+      ShellRoute(
+        builder: (
+          context,
+          estado,
+          hijo,
+        ) =>
+            CascaronProfesor(
+              rutaActual:
+                  estado.matchedLocation,
+              child: hijo,
+            ),
+        routes: [
+          GoRoute(
+            path: Rutas.dashboardProfesor,
+            pageBuilder: (_, estado,) => _sinTransicion(estado,const DashboardProfesor(),
+            ),
+          ),
+          GoRoute(
+            path: Rutas.materiasProfesor,
+            pageBuilder: (
+              _,
+              estado,
+            ) =>
+                _sinTransicion(
+              estado,
+              const MateriasProfesorPantalla(),
+            ),
+          ),
+          GoRoute(
+            path: Rutas.tareasProfesor,
+            pageBuilder: (
+              _,
+              estado,
+            ) =>
+                _sinTransicion(
+              estado,
+              const TareasProfesorScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Rutas.mensajesProfesor,
+            pageBuilder: (
+              _,
+              estado,
+            ) =>
+                _sinTransicion(
+              estado,
+              const MensajesProfesorScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Rutas.calificacionesProfesor,
+            pageBuilder: (
+              _,
+              estado,
+            ) =>
+                _sinTransicion(
+              estado,
+              const CalificacionesProfesorPantalla(),
+            ),
+          ),
+        ],
+      ),
       // Estudiante con barra inferior
       ShellRoute(
         builder: (context, estado, hijo) =>

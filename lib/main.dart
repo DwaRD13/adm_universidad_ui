@@ -22,12 +22,16 @@ import 'proveedores/inscripcion_proveedor.dart';
 import 'proveedores/materiales_proveedor.dart';
 import 'proveedores/mensajes_proveedor.dart';
 import 'proveedores/perfil_proveedor.dart';
+import 'proveedores/calificaciones_profesor_proveedor.dart';
+import 'proveedores/materias_profesor_proveedor.dart';
+import 'proveedores/asistencia_profesor_proveedor.dart';
 import 'proveedores/sesion_proveedor.dart';
 import 'proveedores/tareas_proveedor.dart';
 import 'proveedores/tema_proveedor.dart';
 import 'servicios/archivo_servicio.dart';
 import 'servicios/auth_servicio.dart';
 import 'servicios/estudiante_servicio.dart';
+import 'servicios/profesor_servicio.dart';
 
 
 
@@ -51,6 +55,7 @@ class _UniConnectAppState extends State<UniConnectApp> {
   // así el token vive en un único sitio.
   final ApiCliente _api = ApiCliente();
   late final EstudianteServicio _estudiante = EstudianteServicio(_api);
+  late final ProfesorServicio _profesor = ProfesorServicio(_api);
   late final ArchivoServicio _archivos = ArchivoServicio(_api);
   late final SesionProveedor _sesion = SesionProveedor(
     api: _api,
@@ -93,8 +98,13 @@ class _UniConnectAppState extends State<UniConnectApp> {
         ChangeNotifierProvider(create: (_) => MaterialesProveedor(_estudiante)),
         ChangeNotifierProvider(create: (_) => MensajesProveedor(_estudiante)),
         ChangeNotifierProvider(create: (_) => PerfilProveedor(_estudiante)),
+        ChangeNotifierProvider(create: (_) => MateriasProfesorProveedor(_profesor),),
+        ChangeNotifierProvider(create: (_) => AsistenciaProfesorProveedor(_profesor),),
+        ChangeNotifierProvider(create: (_) => CalificacionesProfesorProveedor(_profesor),),
 
         Provider<AdminServicio>(create: (_) => _admin),
+        
+        Provider<ProfesorServicio>.value(value: _profesor,),
         // Administrativo
         ChangeNotifierProvider(
           create: (_) => AdminDashboardProveedor(admin: _admin),
